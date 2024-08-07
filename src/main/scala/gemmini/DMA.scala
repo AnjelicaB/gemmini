@@ -333,6 +333,10 @@ class StreamReaderCore[T <: Data, U <: Data, V <: Data](config: GemminiArrayConf
         printf(SynthesizePrintf("RDMA bytes rec: %d\n", total_bytes_read))
       }
     }
+    PerfCounter(state =/= s_idle, "rdma_active_cycles", "cycles during which the read dma is active")
+    PerfCounter(bytesRequested, "rdma_bytes_requested", "bytes requested by the read dma")
+
+
   }
 }
 
@@ -645,5 +649,7 @@ class StreamWriter[T <: Data: Arithmetic](nXacts: Int, beatBits: Int, maxBytes: 
         printf(SynthesizePrintf("WDMA total latency: %d\n", total_latency))
       }
     }
+    PerfCounter(state =/= s_idle, "wdma_active_cycles", "cycles during which write read dma is active")
+    PerfCounter(req.len,"wdma_bytes_requested", "bytes requested by the write dma")
   }
 }

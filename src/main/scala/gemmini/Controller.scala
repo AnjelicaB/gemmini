@@ -82,6 +82,8 @@ class GemminiModule[T <: Data: Arithmetic, U <: Data, V <: Data]
   val gated_clock = if (clock_gate) ClockGate(clock, clock_en_reg, "gemmini_clock_gate") else clock
   outer.spad.module.clock := gated_clock
 
+  PerfCounter(gated_clock.asUInt.asBool, "gemmini_clock", "cycles in Gemmini clock domain")
+
   /*
   //=========================================================================
   // Frontends: Incoming commands and ROB
@@ -351,6 +353,14 @@ class GemminiModule[T <: Data: Arithmetic, U <: Data, V <: Data]
   counters.io.event_io.connectEventSignal(CounterEvent.MAIN_LD_EX_CYCLES, incr_ld_ex_cycles)
   counters.io.event_io.connectEventSignal(CounterEvent.MAIN_ST_EX_CYCLES, incr_st_ex_cycles)
   counters.io.event_io.connectEventSignal(CounterEvent.MAIN_LD_ST_EX_CYCLES, incr_ld_st_ex_cycles)
+
+  PerfCounter(incr_ld_cycles, "gemmini_load_busy", "cycles when Gemmini load controller is busy")
+  PerfCounter(incr_st_cycles, "gemmini_store_busy", "cycles when Gemmini store controller is busy")
+  PerfCounter(incr_ex_cycles, "gemmini_execute_busy", "cycles when Gemmini execute controller is busy")
+  PerfCounter(incr_ld_st_cycles, "gemmini_load_store_busy", "cycles when Gemmini load and store controllers are busy")
+  PerfCounter(incr_ld_ex_cycles, "gemmini_load_execute_busy", "cycles when Gemmini load and execute controllers are busy")
+  PerfCounter(incr_st_ex_cycles, "gemmini_store_execute_busy", "cycles when Gemmini store and execute controllers are busy")
+  PerfCounter(incr_ld_st_ex_cycles, "gemmin_load_store_execute_busy", "cycles when Gemmini load, store, and execute controllers are busy")
 
   // Issue commands to controllers
   // TODO we combinationally couple cmd.ready and cmd.valid signals here
