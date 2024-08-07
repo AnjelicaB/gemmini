@@ -13,8 +13,6 @@ import freechips.rocketchip.diplomacy._
 import gemmini.Arithmetic.SIntArithmetic
 import hardfloat._
 
-import midas.targetutils.PerfCounter
-
 // -----------------------
 // Component Mixin Configs
 // -----------------------

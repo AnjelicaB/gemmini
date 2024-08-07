@@ -14,6 +14,8 @@ import freechips.rocketchip.tilelink.TLIdentityNode
 import GemminiISA._
 import Util._
 
+import midas.targetutils.PerfCounter
+
 class GemminiCmd(rob_entries: Int)(implicit p: Parameters) extends Bundle {
   val cmd = new RoCCCommand
   val rob_id = UDValid(UInt(log2Up(rob_entries).W))
