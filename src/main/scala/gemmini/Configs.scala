@@ -239,6 +239,29 @@ object GemminiConfigs {
 
   val leanPrintfConfig = defaultConfig.copy(dataflow=Dataflow.WS, max_in_flight_mem_reqs = 64, acc_read_full_width = false, ex_read_from_acc = false, ex_write_to_spad = false, hardcode_d_to_garbage_addr = true, use_firesim_simulation_counters=true)
 
+  // Anjelica's configs
+
+  val mediumDefaultConfig = defaultConfig.copy(
+    tileRows = 1,
+    tileColumns = 1,
+    meshRows = 8,
+    meshColumns = 8,
+
+    sp_capacity = CapacityInKilobytes(128),
+    acc_capacity = CapacityInKilobytes(32),
+  )
+
+  val mediumPrintDefaultConfig = defaultConfig.copy(
+    tileRows = 1,
+    tileColumns = 1,
+    meshRows = 8,
+    meshColumns = 8,
+
+    sp_capacity = CapacityInKilobytes(128),
+    acc_capacity = CapacityInKilobytes(32),
+    use_firesim_simulation_counters=true
+  )
+
 }
 
 /**
@@ -367,4 +390,30 @@ class DualGemminiConfig extends Config((site, here, up) => {
     }
     up(BuildRoCC) ++ Seq(int_fn, fp_fn)
   }
+})
+
+// Anjelica's configs
+
+class MediumGemminiConfig[T <: Data : Arithmetic, U <: Data, V <: Data](
+  gemminiConfig: GemminiArrayConfig[T,U,V] = GemminiConfigs.mediumDefaultConfig
+) extends Config((site, here, up) => {
+  case BuildRoCC => up(BuildRoCC) ++ Seq(
+    (p: Parameters) => {
+      implicit val q = p
+      val gemmini = LazyModule(new Gemmini(gemminiConfig))
+      gemmini
+    }
+  )
+})
+
+class MediumPrintGemminiConfig[T <: Data : Arithmetic, U <: Data, V <: Data](
+  gemminiConfig: GemminiArrayConfig[T,U,V] = GemminiConfigs.mediumPrintDefaultConfig
+) extends Config((site, here, up) => {
+  case BuildRoCC => up(BuildRoCC) ++ Seq(
+    (p: Parameters) => {
+      implicit val q = p
+      val gemmini = LazyModule(new Gemmini(gemminiConfig))
+      gemmini
+    }
+  )
 })
